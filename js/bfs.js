@@ -1,4 +1,4 @@
-// 1. Graph object represent as list of members
+// 0. Graph object represent as list of members
  
 let G = [
 	{"name": 's', "neighbors": ['a', 'b', 'c'] },
@@ -11,6 +11,17 @@ let G = [
 	{"name": 'g', "neighbors": ['f'] }
 ];
 
+//1. Visualization begin
+function vizInit(G) {
+	let left = 100;
+	let top = 20;
+	for (let i=0; i<G.length; i++) {
+		$(".container").append("<div class='node' id='"+G[i].name+"'>"+G[i].name+"</div> ");
+		$("#"+G[i].name).css({"left":left, "top": top});
+		left = left + 50;
+		top = top + 50;
+	}
+} 
 
 //2. Algorithms BFS (Bread First Search)  
 //get 2 parameters graph G and node s
@@ -66,4 +77,9 @@ function search(arr, value) {
 	return null;
 }
 
-bsf(G, G[0]);
+$(function() {
+
+	vizInit(G);
+	bsf(G, G[0]);
+
+});

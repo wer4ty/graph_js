@@ -36,18 +36,23 @@ function bsf(G, s) {
 	s.color = 'G'; // gray
 	Q.enqueue(s);
 
+	let steps = 1;
 	// 2.3 Alrorithms cycle
 	while (Q.values.length != 0) {
 		let u = Q.dequeue();
+		console.log(steps);
+		console.log(G);
 		u.neighbors.forEach(function(v) {
-			if (v.color === 'W') {
-				v.d = u.d + 1;
-				v.pi = search(G, u);
-				v.color = 'G';
+			let tmp_node = search(G, v);
+			if (tmp_node.color === 'W') {
+				tmp_node.d = u.d + 1;
+				tmp_node.pi = u;
+				tmp_node.color = 'G';
 				Q.enqueue(search(G, v));
 			}
 		});
 		u.color = 'B';
+		steps += 1; 
 	}
 }
 

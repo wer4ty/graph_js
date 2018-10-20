@@ -19,24 +19,46 @@ function bsf(G, s) {
 	// 2.1 Create simple API of queue for algorithms needs
 	let Q = {
     	values : [],
-    	enqueue : function(obj) { values.unshift(obj); },
-    	dequeue : function() { if (values.lenth === 0) { return null; }
-    	else return  values.shift(); }
+    	enqueue : function(obj) { Q.values.unshift(obj); },
+    	dequeue : function() { if (Q.values.lenth === 0) { return null; }
+    	else return  Q.values.shift(); }
 	}
 
 
 	// 2.2 Init
-	let d = [];
-	let color = [];
-	let pi = [];
-	for (var i =0; i<G.length; i++) {
-		d[i] = Infinity;
-		color[i] = 'G' // gray
-		pi[i] = null;
+	for (let i =0; i<G.length; i++) {
+		G[i].d = Infinity;
+		G[i].color = 'W' // white
+		G[i].pi = null;
 	}
 
-	
+	s.d = 0;
+	s.color = 'G'; // gray
+	Q.enqueue(s);
+
+	// 2.3 Alrorithms cycle
+	while (Q.values.length != 0) {
+		let u = Q.dequeue();
+		u.neighbors.forEach(function(v) {
+			if (v.color === 'W') {
+				v.d = u.d + 1;
+				v.pi = search(G, u);
+				v.color = 'G';
+				Q.enqueue(search(G, v));
+			}
+		});
+		u.color = 'B';
+	}
 }
 
+//search in array helper function
+function search(arr, value) {
+	for (let i =0; i<arr.length; i++) {
+		if (arr[i].name === value) {
+			return arr[i];
+		}
+	}
+	return null;
+}
 
 bsf(G, G[0]);

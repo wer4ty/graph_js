@@ -32,7 +32,7 @@ function bsf(G, s) {
     	values : [],
     	enqueue : function(obj) { Q.values.unshift(obj); },
     	dequeue : function() { if (Q.values.lenth === 0) { return null; }
-    	else return  Q.values.shift(); }
+    	else return  Q.values.pop(); }
 	}
 
 
@@ -51,11 +51,9 @@ function bsf(G, s) {
 	// 2.3 Alrorithms cycle
 	while (Q.values.length != 0) {
 		let u = Q.dequeue();
-		console.log(steps);
-		console.log(G);
 		u.neighbors.forEach(function(v) {
 			let tmp_node = search(G, v);
-			if (tmp_node.color === 'W') {
+			if (tmp_node.color == 'W') {
 				tmp_node.d = u.d + 1;
 				tmp_node.pi = u;
 				tmp_node.color = 'G';
@@ -65,6 +63,7 @@ function bsf(G, s) {
 		u.color = 'B';
 		steps += 1; 
 	}
+	console.log(G);
 }
 
 //search in array helper function

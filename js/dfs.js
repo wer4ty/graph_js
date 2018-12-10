@@ -13,6 +13,8 @@ let G = [
 
 let time;
 
+let E = [];
+
 //1. Algorithms DFS (Depth First Search)  
 //get 1 parameters graph G and node s
 function dsf(G) {
@@ -43,6 +45,7 @@ function DFS_Visit(G,u) {
 
 	u.neighbors.forEach(function(v) {
 		let tmp = search(G, v);
+		edgeType(u, tmp);
 		if (tmp.color == 'W') {
 			tmp.pi = u;
 			DFS_Visit(G, tmp);
@@ -64,7 +67,15 @@ function search(arr, value) {
 	return null;
 }
 
+// determine edge type on runtime
+function edgeType(u,v) {
+	if (v.color == 'W') { E.push({name:"("+u.name+","+v.name+")", type: "Tree"}); }
+	else if (v.color == 'G') { E.push({name:"("+u.name+","+v.name+")", type: "Backward"}); }
+	else if (v.color == 'B') { E.push({name:"("+u.name+","+v.name+")", type: "Forward/Default"}); }
+}
+
 $(function() {
 	dsf(G);
 	console.log(G);
+	console.log(E);
 });

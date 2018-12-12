@@ -11,7 +11,7 @@ let G = [
 	{"name": 'h', "neighbors": ['g'] },
 ];
 
-let time;
+let time, hasCircle = false;
 
 let E = [];
 
@@ -70,12 +70,15 @@ function search(arr, value) {
 // determine edge type on runtime
 function edgeType(u,v) {
 	if (v.color == 'W') { E.push({name:"("+u.name+","+v.name+")", type: "Tree"}); }
-	else if (v.color == 'G') { E.push({name:"("+u.name+","+v.name+")", type: "Backward"}); }
+	else if (v.color == 'G') { E.push({name:"("+u.name+","+v.name+")", type: "Backward"}); hasCircle = true; }
 	else if (v.color == 'B') { E.push({name:"("+u.name+","+v.name+")", type: "Forward/Default"}); }
 }
 
 $(function() {
 	dsf(G);
+	console.log("Result graph G after DFS");
 	console.log(G);
 	console.log(E);
+	if (hasCircle) console.log("Graph G has a circle")
+	else console.log("Graph G has not  a circle")
 });

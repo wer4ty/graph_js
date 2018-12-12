@@ -8,7 +8,16 @@ let G = [
 	{"name": 'e', "neighbors": ['f', 'h'] },
 	{"name": 'f', "neighbors": ['c', 'e'] },
 	{"name": 'g', "neighbors": ['d'] },
-	{"name": 'h', "neighbors": ['g'] },
+	{"name": 'h', "neighbors": ['g'] }
+];
+
+let G_no_circle = [
+	{"name": 'a', "neighbors": ['b', 'c'] },
+	{"name": 'b', "neighbors": ['c', 'd', 'e'] },
+	{"name": 'c', "neighbors": ['e', 'f'] },
+	{"name": 'd', "neighbors": ['e'] },
+	{"name": 'e', "neighbors": ['f'] },
+	{"name": 'f', "neighbors": [] }
 ];
 
 let time, hasCircle = false;
@@ -67,18 +76,52 @@ function search(arr, value) {
 	return null;
 }
 
+function sorting_via_f(G) {
+	for(let i=0; i<G.length; i++) {
+		for(let j=i; j<G.length; j++) {
+			if (G[i].f < G[j].f ) {
+				let tmp = G[j];
+				G[j] = G[i];
+				G[i] = tmp;
+			}
+		}
+	}
+}
+
 // determine edge type on runtime
 function edgeType(u,v) {
-	if (v.color == 'W') { E.push({name:"("+u.name+","+v.name+")", type: "Tree"}); }
-	else if (v.color == 'G') { E.push({name:"("+u.name+","+v.name+")", type: "Backward"}); hasCircle = true; }
-	else if (v.color == 'B') { E.push({name:"("+u.name+","+v.name+")", type: "Forward/Default"}); }
+	let edge =  {name:"("+u.name+","+v.name+")", type: "None"};
+
+	if (v.color == 'W')  { edge.type = "Tree"; }
+	else if (v.color == 'G') {
+	 edge.type =  "Backward"; 
+	 hasCircle = true;
+	 console.log(edge);
+	}
+	else if (v.color == 'B') { edge.type =   "Forward/Default";  }
+
+	if (search(E, "("+u.name+","+v.name+")") === null) { E.push(edge); }
+}
+
+function topologicalSort(G) {
+	console.log("Topological Sort:");
+	dsf(G);
+	sorting_via_f(G);
+
+	for(let i=0; i<G.length; i++) {
+		console.log(G[i].name);
+	}
 }
 
 $(function() {
-	dsf(G);
+	dsf(G_no_circle);
 	console.log("Result graph G after DFS");
-	console.log(G);
+	console.log(G_no_circle);
 	console.log(E);
-	if (hasCircle) console.log("Graph G has a circle")
-	else console.log("Graph G has not  a circle")
+
+	if (hasCircle) { console.log("Graph G has a circle") }
+	else {
+		console.log("Graph G has not  a circle");
+		topologicalSort(G_no_circle);
+	} 
 });

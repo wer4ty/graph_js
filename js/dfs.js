@@ -5,7 +5,7 @@ let G = [
 	{"name": 'b', "neighbors": ['a'] },
 	{"name": 'c', "neighbors": ['b'] },
 	{"name": 'd', "neighbors": ['g', 'h'] },
-	{"name": 'e', "neighbors": ['f', 'h'] },
+	{"name": 'e', "neighbors": ['f', 'b', 'h'] },
 	{"name": 'f', "neighbors": ['c', 'e'] },
 	{"name": 'g', "neighbors": ['d'] },
 	{"name": 'h', "neighbors": ['g'] }
@@ -21,12 +21,12 @@ let G_no_circle = [
 ];
 
 let time, hasCircle = false;
-
+let wood = [];
 let E = [];
 
 //1. Algorithms DFS (Depth First Search)  
 //get 1 parameters graph G and node s
-function dsf(G) {
+function dfs(G) {
 
 	// 1.1 Init
 	for (let i =0; i<G.length; i++) {
@@ -96,7 +96,6 @@ function edgeType(u,v) {
 	else if (v.color == 'G') {
 	 edge.type =  "Backward"; 
 	 hasCircle = true;
-	 console.log(edge);
 	}
 	else if (v.color == 'B') { edge.type =   "Forward/Default";  }
 
@@ -105,7 +104,7 @@ function edgeType(u,v) {
 
 function topologicalSort(G) {
 	console.log("Topological Sort:");
-	dsf(G);
+	dfs(G);
 	sorting_via_f(G);
 
 	for(let i=0; i<G.length; i++) {
@@ -113,15 +112,73 @@ function topologicalSort(G) {
 	}
 }
 
-$(function() {
-	dsf(G_no_circle);
-	console.log("Result graph G after DFS");
-	console.log(G_no_circle);
-	console.log(E);
+// Algorithm Kosaraju-Sharir (Divide Graph to Strongly Connected Component)
 
-	if (hasCircle) { console.log("Graph G has a circle") }
-	else {
-		console.log("Graph G has not  a circle");
-		topologicalSort(G_no_circle);
-	} 
+function GSCC() {
+	dfs(G);
+
+	let G_T = [];
+
+	G.forEach(function(u){
+		u.neighbors.forEach(function(v){
+			let t = search(G_T, v);
+			if (t == null) {
+				G_T.push({"name": v, "neighbors":[u.name]});
+			}
+			else {
+				t.neighbors.push(u.name); 
+			}
+		});
+	});
+
+	sorting_via_f(G);
+
+	let G2 = [];
+	for(let i=0; i<G.length; i++) {
+		G[i].color = 'W';
+		G_T[i].color = 'W';
+	}
+	time = 0;
+
+	function myDFS_Visit(G,u) {
+	let t = search(G_T, u.name);
+	t.color = 'G'; // gray
+	time++;
+	t.d = time;
+
+	t.neighbors.forEach(function(v) {
+		let tmp = search(G, v);
+		if (tmp.color == 'W') {
+			tmp.pi = t;
+			DFS_Visit(G, tmp);
+		}
+	});
+
+	t.color = 'B';
+	time++;
+	t.f = time;
+}
+
+	G.forEach(function(v) {
+		if (v.color == 'W') {
+		myDFS_Visit(G_T, v);
+		}
+	});
+
+	console.log(G_T);
+}
+
+
+$(function() {
+	GSCC(G);
+	// dsf(G_no_circle);
+	// console.log("Result graph G after DFS");
+	// console.log(G_no_circle);
+	// console.log(E);
+
+	// if (hasCircle) { console.log("Graph G has a circle") }
+	// else {
+	// 	console.log("Graph G has not  a circle");
+	 //	topologicalSort(G_no_circle);
+	// } 
 });

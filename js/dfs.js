@@ -123,7 +123,7 @@ function GSCC() {
 		u.neighbors.forEach(function(v){
 			let t = search(G_T, v);
 			if (t == null) {
-				G_T.push({"name": v, "neighbors":[u.name]});
+				G_T.push({"name": v, "neighbors":[u.name], "pi": undefined});
 			}
 			else {
 				t.neighbors.push(u.name); 
@@ -140,8 +140,7 @@ function GSCC() {
 	}
 	time = 0;
 
-	function myDFS_Visit(G,u) {
-	let t = search(G_T, u.name);
+	function myDFS_Visit(G,t,w) {
 	t.color = 'G'; // gray
 	time++;
 	t.d = time;
@@ -150,7 +149,8 @@ function GSCC() {
 		let tmp = search(G, v);
 		if (tmp.color == 'W') {
 			tmp.pi = t;
-			DFS_Visit(G, tmp);
+			wood[w].push(tmp.name);
+			myDFS_Visit(G, tmp, w);
 		}
 	});
 
@@ -159,13 +159,19 @@ function GSCC() {
 	t.f = time;
 }
 
+	let w = -1;
 	G.forEach(function(v) {
-		if (v.color == 'W') {
-		myDFS_Visit(G_T, v);
+	
+		let t = search(G_T, v.name);
+		if (t.color == 'W') {
+			w++;
+			wood[w] = [t.name];
+			myDFS_Visit(G_T, t, w);
 		}
 	});
 
-	console.log(G_T);
+	console.log(wood);
+	
 }
 
 

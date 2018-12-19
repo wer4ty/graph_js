@@ -21,7 +21,7 @@ let G_no_circle = [
 ];
 
 let time, hasCircle = false;
-let wood = [];
+let sc_components = []
 let E = [];
 
 //1. Algorithms DFS (Depth First Search)  
@@ -149,7 +149,7 @@ function GSCC() {
 		let tmp = search(G, v);
 		if (tmp.color == 'W') {
 			tmp.pi = t;
-			wood[w].push(tmp.name);
+			sc_components[w].push(tmp.name);
 			myDFS_Visit(G, tmp, w);
 		}
 	});
@@ -165,26 +165,26 @@ function GSCC() {
 		let t = search(G_T, v.name);
 		if (t.color == 'W') {
 			w++;
-			wood[w] = [t.name];
+			sc_components[w] = [t.name];
 			myDFS_Visit(G_T, t, w);
 		}
 	});
 
-	console.log(wood);
+	console.log("Strongly connected Components: ",sc_components);
 	
 }
 
 
 $(function() {
 	GSCC(G);
-	// dsf(G_no_circle);
-	// console.log("Result graph G after DFS");
-	// console.log(G_no_circle);
-	// console.log(E);
+	dfs(G_no_circle);
+	console.log("Result graph G after DFS");
+	console.log(G_no_circle);
+	console.log(E);
 
-	// if (hasCircle) { console.log("Graph G has a circle") }
-	// else {
-	// 	console.log("Graph G has not  a circle");
-	 //	topologicalSort(G_no_circle);
-	// } 
+	if (hasCircle) { console.log("Graph G has a circle") }
+	else {
+		console.log("Graph G has not  a circle");
+	 	topologicalSort(G_no_circle);
+	} 
 });

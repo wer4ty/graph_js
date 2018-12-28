@@ -8,6 +8,7 @@ let G = [
 	{v: 'e', neiborhoods: [ {n:'c', w:1}, {n:'d', w:4}] }
 ];
 
+
 // 1. Prim Algorithm (MST Problem)
 
 function Prim(s) {
@@ -31,7 +32,8 @@ function Prim(s) {
 			}
 		});
 		
-		for (let i =0; i< d.length; i++) {
+		
+		for (let i =1; i< d.length; i++) {
 			Q.push(d[i]);
 		}
 
@@ -52,7 +54,7 @@ function Prim(s) {
 		}
 		
 		function extractMin() {
-			let min = Q[0].val, ind = 0, minV = Q[0];
+			let min = Q[0].val, ind = 0, minV=Q[0];
 			for (let i =0; i< Q.length; i++) {
 				if (min > Q[i].val) { min = Q[i].val; minV = Q[i]; ind = i; }
 			}
@@ -68,26 +70,33 @@ function Prim(s) {
 		// 2. Main Loop
 		while (Q.length > 0) {
 			let u = extractMin();
-
 			S.push(u.v);
 			T.push({edge: u.pi+"-"+u.v});
 			
-			let p = search_in_G(u.v);
-				for (let i=0; i< G[p].neiborhoods.length; i++) {
-					let is_in_S = S.indexOf(G[p].neiborhoods[i].n);
-					let ind = search_in_d(G[p].neiborhoods[i].n);
-					if (is_in_S == -1 && v.w < d[ind]) {
-						d[ind].val = G[p].neiborhoods[i].w;
-						d[ind].pi = G[p].v;
-					}					
-				}
-			console.log(d);
+			let ind = search_in_G(u.v);
+			if (ind != -1) {
+				G[ind].neiborhoods.forEach(function(v){
+					let ind_p = S.indexOf(v.n);
+					let ind_x = search_in_d(v.n);
+					if (ind_p == -1 && v.w < d[ind_x].val) {
+						d[ind_x].val = v.w;
+						d[ind_x].pi = G[ind].v;
+					}
+				});
+			}
 		}
-		
-		//console.log(T);
+	
+	console.log(S);
+	console.log(T);
+	return T;
 }
 
 
 $(function() {
 	Prim(G[0]);
 });
+
+// reload each 5 seconds
+/*setInterval(function(){
+	window.location.href = window.location.href;
+}, 50000);*/

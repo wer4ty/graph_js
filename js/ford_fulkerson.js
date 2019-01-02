@@ -1,12 +1,10 @@
-// 0. Graph object represent as matrix
+// 0. Graph object represent as adjscensy list
  
 let G = [
-	{v: 's', neiborhoods: [ {n:'a', w:16}, {n:'c', w:13}] },
-	{v: 'a', neiborhoods: [ {n:'b', w:12}, {n:'c', w:10}] },
-	{v: 'b', neiborhoods: [ {n:'c', w:9},  {n:'t', w:20}] },
-	{v: 'c', neiborhoods: [ {n:'a', w:4},  {n:'d', w:14}] },
-	{v: 'd', neiborhoods: [ {n:'b', w:7},  {n:'t', w:4}] },
-	{v: 't', neiborhoods: [] }
+	{v: '0', neiborhoods: [ {n:'1', w:4}, {n:'2', w:8}] },
+	{v: '1', neiborhoods: [ {n:'2', w:1}, {n:'3', w:8}] },
+	{v: '2', neiborhoods: [ {n:'1', w:1},  {n:'3', w:3}] },
+	{v: '3', neiborhoods: [] },
 ];
 
 // helper functions
@@ -17,31 +15,63 @@ function search_in_array(arr, name) {
 	return -1;
 }
 
+function arr_minus_arr(arr1, arr2) {
+	let res = [];
+	for (let i=0; i< arr1.length; i++) {
+		if ( arr2.indexOf(arr1[i]) == -1 ) {
+			res.push(arr1[i]);
+		}
+	}
+	return res;
+}
+
+function remove_from_arr(arr, v) {
+	let ind = arr.indexOf(v);
+	if (ind != -1) {
+		let t = arr[arr.lenght-1];
+		arr[arr.lenght-1] = arr[ind];
+		arr[ind] = t;
+		arr.pop();
+	}
+	return arr;
+}
+
+function copy_arr1_to_arr2(arr1, arr2) {
+	for (let i=0; i<arr1.length; i++) {
+		arr2.push(arr1[i]);
+	}
+	return arr2;
+}
+
 // 1. Ford Fulkerson Algorithm (Flow Network Problem)
 
 function Ford_Fulkerson(s,t) {
-	
-	// 1. Bild set of edges
-	let E = [];
+	// 0. Temporary set of all vertices only names
+	let Vertices = [];
 	for (let i=0; i< G.length; i++) {
+		Vertices.push(G[i].v);
+	}
+	
+	// 1. Init
+	
+	let N = [], Nf = [];
+	for (let i=0; i< G.length; i++) {
+		let not_neiborhoods = [], neiborhoods_names = [G[i].v];
 		G[i].neiborhoods.forEach(function(e){
-			E.push({v1: G[i].v, v2: e.n, w: e.w});
+			N.push({v1: G[i].v, v2: e.n, f:0, c: e.w});
+			neiborhoods_names.push(e.n);
+		});
+		not_neiborhoods = arr_minus_arr(Vertices, neiborhoods_names);
+		
+		not_neiborhoods.forEach(function(e){
+			N.push({v1: G[i].v, v2: e, f:0, c: 0});
 		});
 	}
 	
-	// 2. Init
-	let flow1 = [], flow2 = [], cf1 = [], cf2 = [];
-	
-	E.forEach(function(e){
-		flow1.push( {v1: e.v1, v2: e.v2, val: 0} );
-		flow2.push( {v1: e.v2, v2: e.v1, val: 0} );
-		cf1.push( {v1: e.v1, v2: e.v2, val: e.w} );
-		cf2.push( {v1: e.v2, v2: e.v1, val: -e.w} );
-	});
-	
-	let N = [], Nf = [];
-	G.forEach(function(v){ Nf.push(v); N.push(v); });
-
+	copy_arr1_to_arr2(N, Nf);
+	console.log(N);
+	console.log(Nf);
+		
 	// 3. Find Path in Nf from s to t (BFS with improvment)
 	// start index -> 0, destination index -> last elementh in array Nf
 	function findPath(start, destination) {
@@ -114,6 +144,7 @@ function Ford_Fulkerson(s,t) {
 	
 	let P = [];
 	//while (true) {
+		
 		P = findPath(s,t);
 		if (P.length > 0) {
 			console.log(P);
@@ -125,33 +156,9 @@ function Ford_Fulkerson(s,t) {
 			let v1 = P[i+1];
 			let v2 = P[i];
 			
-			
-			flow1.forEach(function(f){ 
-				if (f.v1 == v1 && f.v2 == v2) {
-				f.val = f.val + cf_P; 
-				}
-			});
-			
-			flow2.forEach(function(f){ 
-				if (f.v2 == v1 && f.v1 == v2) {
-				f.val = f.val - cf_P; 
-				}
-			});
-			
-			cf1.forEach(function(f){ 
-				if (f.v1 == v1 && f.v2 == v2) {
-				f.val = f.val - cf_P; 
-				}
-			});
-			
-			cf2.forEach(function(f){ 
-				if (f.v2 == v1 && f.v1 == v2) {
-				f.val =f.val + cf_P; 
-				}
-			});
 						
 			}
-			console.log(cf1);
+			
 		}
 		
 		//else { break;}

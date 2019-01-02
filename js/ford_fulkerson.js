@@ -145,33 +145,71 @@ function Ford_Fulkerson(s,t) {
 		}
 	return c_min;
 	}
-	
-	// dependly on previous calculate flow rebild edges in network Nf
-	function rebild_Nf() {
-	
+
+	// 5. update flow in root flow network via changing f in N
+	function update_f_in_N(path, Cf_P) {
+		for (let i=path.length-1; i >= 0; i--) {
+			let v1 = path[i+1];
+			let v2 = path[i];
+			
+			for(let i=0; i<N.length; i++) {
+				for(let j=0; j<N[i].neiborhoods.length; j++) {
+
+					// "+" -->
+					if (v1 === N[i].v && v2 === N[i].neiborhoods[j].n) {
+						N[i].neiborhoods[j].f = N[i].neiborhoods[j].f + Cf_P;
+					}
+
+					// "-" -->
+					if (v2 === N[i].v && v1 === N[i].neiborhoods[j].n) {
+						N[i].neiborhoods[j].f = N[i].neiborhoods[j].f - Cf_P;
+					}
+				}
+			}
+		}
 	}
-	
-	let P = [];
-	//while (true) {
+
+	// 6. update capacity in recedual flow network via changing c in Nf
+	function update_c_in_Nf(path, Cf_P) {
+		for (let i=path.length-1; i >= 0; i--) {
+			let v1 = path[i+1];
+			let v2 = path[i];
+			
+			for(let i=0; i<Nf.length; i++) {
+				for(let j=0; j<Nf[i].neiborhoods.length; j++) {
+
+					// "-" -->
+					if (v1 === Nf[i].v && v2 === Nf[i].neiborhoods[j].n) {
+						Nf[i].neiborhoods[j].c = Nf[i].neiborhoods[j].c - Cf_P;
+					}
+
+					// "-" -->
+					if (v2 === Nf[i].v && v1 === Nf[i].neiborhoods[j].n) {
+						Nf[i].neiborhoods[j].c = Nf[i].neiborhoods[j].c + Cf_P;
+					}
+				}
+			}
+		}
+	}
+		
+	let P = [], fMax = 0;
+	while (true) {
 		
 		P = findPath(s,t);
 		if (P.length > 0) {
-			console.log(P);
 			
 			let cf_P = find_min_capacity_edge(P);
-			console.log(cf_P);
-			
-			for (let i=0; i < P.length-1; i++) {
-			let v1 = P[i+1];
-			let v2 = P[i];
-			
-						
-			}
+			fMax += cf_P;
+
+			update_f_in_N(P, cf_P);
+			update_c_in_Nf(P, cf_P);
 			
 		}
 		
-		//else { break;}
-	//}
+		else { break;}
+	}
+	console.log(fMax);
+	return fMax;
 	
 }
 

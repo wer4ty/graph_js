@@ -56,21 +56,22 @@ function Ford_Fulkerson(s,t) {
 	
 	let N = [], Nf = [];
 	for (let i=0; i< G.length; i++) {
+		N[i] = {v : G[i].v, neiborhoods: []};
 		let not_neiborhoods = [], neiborhoods_names = [G[i].v];
 		G[i].neiborhoods.forEach(function(e){
-			N.push({v1: G[i].v, v2: e.n, f:0, c: e.w});
+			N[i].neiborhoods.push( {n:e.n, c:e.w, f:0} );
 			neiborhoods_names.push(e.n);
 		});
 		not_neiborhoods = arr_minus_arr(Vertices, neiborhoods_names);
 		
 		not_neiborhoods.forEach(function(e){
-			N.push({v1: G[i].v, v2: e, f:0, c: 0});
+			N[i].neiborhoods.push( {n:e, c:0, f:0} );
 		});
 	}
 	
 	copy_arr1_to_arr2(N, Nf);
-	console.log(N);
-	console.log(Nf);
+	//console.log(N);
+	//console.log(Nf);
 		
 	// 3. Find Path in Nf from s to t (BFS with improvment)
 	// start index -> 0, destination index -> last elementh in array Nf
@@ -79,7 +80,7 @@ function Ford_Fulkerson(s,t) {
 		let destination_index = -1;
 		
 		Nf.forEach(function(vertex){
-			let v_tag = {v: vertex.v, neiborhoods:vertex.neiborhoods, color:'W', d:Infinity, pi:undefined}
+			let v_tag = {v: vertex.v, neiborhoods:vertex.neiborhoods, color:'W', d:Infinity, pi:undefined};
 			G_tag.push(v_tag); 
 			});
 		
@@ -89,11 +90,12 @@ function Ford_Fulkerson(s,t) {
 		
 		while (Q.length > 0) {
 			let u = Q.shift();
-			u.neiborhoods.forEach(function(ver){
+			u.neiborhoods.forEach(function(ver){ 
 				let t_ind = search_in_array(G_tag, ver.n);
 				let t = G_tag[t_ind];
+				let t_capacity = ver.c;
 				
-				if (t.color === 'W') {
+				if (t.color === 'W' && t_capacity > 0) {
 					t.color = 'G';
 					t.d = u.d + 1;
 					t.pi = u.v;

@@ -126,15 +126,22 @@ function Ford_Fulkerson(s,t) {
 	//4. find bottle neck edge in Path with minimum capacity
 	function find_min_capacity_edge(path) {
 		let c_min = Infinity;
-		for (let i=0; i < path.length-1; i++) {
+		for (let i=path.length-1; i >= 0; i--) {
 			let v1 = path[i+1];
 			let v2 = path[i];
 			
-			E.forEach(function(e){
-				if (e.v1 == v1 && e.v2 == v2) {
-					if (e.w < c_min)  c_min = e.w;
+			for(let i=0; i<N.length; i++) {
+				if (v1 === N[i].v) {
+					for(let j=0; j<N[i].neiborhoods.length; j++) {
+						if (v2 === N[i].neiborhoods[j].n) {
+							if (c_min > N[i].neiborhoods[j].c) {
+								c_min = N[i].neiborhoods[j].c;
+							}
+						}
+					}
 				}
-			});
+			}
+			
 		}
 	return c_min;
 	}

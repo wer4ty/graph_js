@@ -11,10 +11,14 @@ let G = [
 	{"name": 'g', "neighbors": ['f'], "v_ind": 7 }
 ];
 
+let nodes, edges;
+let vis_animation = 0;
+
 $(function() {
 
-	bsf(G, G[0]);
 	viz();
+	bsf(G, G[0]);
+	
 });
 
 
@@ -22,11 +26,11 @@ $(function() {
 function viz() {
 
   // create an array with nodes
-  var nodes = new vis.DataSet([]);
-  var edges = new vis.DataSet([]);
+   nodes = new vis.DataSet([]);
+   edges = new vis.DataSet([]);
 
   for (let i=0; i<G.length; i++) {
-  	nodes.add( {id: i, label: G[i].name} );
+  	nodes.add( {id: i, label: G[i].name, font: { size:  18 }, widthConstraint: { minimum: 100 } } );
   }
 
   // create an array with edges
@@ -36,23 +40,6 @@ function viz() {
   		edges.add( {from: i, to: to_ind.v_ind, arrows:'to'} );
   	}
   }
-
-
-  // var edges = new vis.DataSet([
-  //   {from: 1, to: 2, arrows:'to'},
-  //   {from: 2, to: 3, arrows:{
-  //     to: {
-  //       enabled: true,
-  //       type: 'circle'
-  //     }
-  //   }},
-  //   {from: 3, to: 4, arrows:{
-  //     to: {
-  //       enabled: true,
-  //       type: 'bar'
-  //     }
-  //   }},
-  // ]);
 
   // create a network
   var container = document.getElementById('mynetwork');
@@ -77,10 +64,21 @@ function viz() {
   var network = new vis.Network(container, data, options);
 } 
 
+function repeaint(id, color, fontColor) {
+	vis_animation++;
+	setTimeout(function(){
+			nodes.update({
+				id: id, 
+				font: { color:  fontColor },
+			 	color:{ background:color, border:color,highlight:{background:'red',border:'blue'}}
+			 	 });
+		}, vis_animation*1200);
+}
+
 //2. Algorithms BFS (Bread First Search)  
 //get 2 parameters graph G and node s
 function bsf(G, s) {
-
+	
 	// 2.1 Create simple API of queue for algorithms needs
 	let Q = {
     	values : [],
@@ -95,11 +93,16 @@ function bsf(G, s) {
 		G[i].d = Infinity;
 		G[i].color = 'W' // white
 		G[i].pi = null;
-	}
+
+		repeaint(i, "#fff", "#000");
+	} 
 
 	s.d = 0;
 	s.color = 'G'; // gray
 	Q.enqueue(s);
+
+	let t_ind = search(G, s.name);
+	repeaint(t_ind.v_ind, "#777", "#000");
 
 	let steps = 1;
 	// 2.3 Alrorithms cycle
@@ -112,10 +115,14 @@ function bsf(G, s) {
 				tmp_node.pi = u;
 				tmp_node.color = 'G';
 				Q.enqueue(search(G, v));
+
+				repeaint(tmp_node.v_ind, "#777", "#000");
 			}
 		});
 		u.color = 'B';
-		steps += 1; 
+		steps += 1;
+
+		repeaint(u.v_ind, "#333", "#fff"); 
 	}
 	console.log(G);
 }

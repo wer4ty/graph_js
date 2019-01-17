@@ -1,26 +1,80 @@
 // 0. Graph object represent as list of members
  
 let G = [
-	{"name": 's', "neighbors": ['a', 'b', 'c'] },
-	{"name": 'a', "neighbors": ['b', 'd'] },
-	{"name": 'b', "neighbors": ['c', 'd'] },
-	{"name": 'c', "neighbors": ['d', 'e'] },
-	{"name": 'd', "neighbors": ['a', 'f', 'g'] },
-	{"name": 'e', "neighbors": ['d', 'g'] },
-	{"name": 'f', "neighbors": ['a'] },
-	{"name": 'g', "neighbors": ['f'] }
+	{"name": 's', "neighbors": ['a', 'b', 'c'], "v_ind": 0 },
+	{"name": 'a', "neighbors": ['b', 'd'], "v_ind": 1 },
+	{"name": 'b', "neighbors": ['c', 'd'], "v_ind": 2 },
+	{"name": 'c', "neighbors": ['d', 'e'], "v_ind": 3 },
+	{"name": 'd', "neighbors": ['a', 'f', 'g'], "v_ind": 4 },
+	{"name": 'e', "neighbors": ['d', 'g'], "v_ind": 5 },
+	{"name": 'f', "neighbors": ['a'], "v_ind": 6 },
+	{"name": 'g', "neighbors": ['f'], "v_ind": 7 }
 ];
 
+$(function() {
+
+	bsf(G, G[0]);
+	viz();
+});
+
+
 //1. Visualization begin
-function vizInit(G) {
-	let left = 100;
-	let top = 20;
-	for (let i=0; i<G.length; i++) {
-		$(".container").append("<div class='node' id='"+G[i].name+"'>"+G[i].name+"</div> ");
-		$("#"+G[i].name).css({"left":left, "top": top});
-		left = left + 50;
-		top = top + 50;
-	}
+function viz() {
+
+  // create an array with nodes
+  var nodes = new vis.DataSet([]);
+  var edges = new vis.DataSet([]);
+
+  for (let i=0; i<G.length; i++) {
+  	nodes.add( {id: i, label: G[i].name} );
+  }
+
+  // create an array with edges
+  for (let i=0; i<G.length; i++) {
+  	for (let j=0; j<G[i].neighbors.length; j++) {
+  		let to_ind = search(G, G[i].neighbors[j]);
+  		edges.add( {from: i, to: to_ind.v_ind, arrows:'to'} );
+  	}
+  }
+
+
+  // var edges = new vis.DataSet([
+  //   {from: 1, to: 2, arrows:'to'},
+  //   {from: 2, to: 3, arrows:{
+  //     to: {
+  //       enabled: true,
+  //       type: 'circle'
+  //     }
+  //   }},
+  //   {from: 3, to: 4, arrows:{
+  //     to: {
+  //       enabled: true,
+  //       type: 'bar'
+  //     }
+  //   }},
+  // ]);
+
+  // create a network
+  var container = document.getElementById('mynetwork');
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+
+  var options = {
+
+    // Enable this to make the endpoints smaller/larger
+    edges: {
+      arrows: {
+        to: {
+          scaleFactor: 1
+        }
+      }
+    }
+
+  };
+
+  var network = new vis.Network(container, data, options);
 } 
 
 //2. Algorithms BFS (Bread First Search)  
@@ -75,10 +129,3 @@ function search(arr, value) {
 	}
 	return null;
 }
-
-$(function() {
-
-	vizInit(G);
-	bsf(G, G[0]);
-
-});

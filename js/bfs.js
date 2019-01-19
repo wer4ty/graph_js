@@ -75,9 +75,9 @@ function rebildGraphViaUserChanges() {
 	let obj, counter=0;
 	
 	nodes.forEach(function(n){  
-			obj = {name: undefined, "neighbors": [] };
+			obj = {name: undefined, "neighbors": [], v_ind:undefined };
 			obj.name = n.label;
-			
+			obj.v_ind = n.id;
 			let tmp_neibors = searchIdInEdges(n.id);
 			for (let j=0; j<tmp_neibors.length; j++) {
 				obj.neighbors.push(NodeIdToLabel(tmp_neibors[j]));
@@ -160,7 +160,7 @@ function repeaint(id, color, fontColor, text, borderColor) {
 	setTimeout(function(){
 			nodes.update({
 				id: id, 
-				label: text,
+				//label: text,
 				font: { color:  fontColor },
 			 	color:{ background:color, border:borderColor,highlight:{background:'red',border:'blue'}}
 			 	 });
@@ -170,7 +170,7 @@ function repeaint(id, color, fontColor, text, borderColor) {
 function repeaintAll(id, color, fontColor, text, borderColor) {
 			nodes.update({
 				id: id, 
-				label: text,
+				//label: text,
 				font: { color:  fontColor },
 			 	color:{ background:color, border:borderColor,highlight:{background:'red',border:'blue'}}
 			 	 });

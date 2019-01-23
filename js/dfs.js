@@ -1,28 +1,43 @@
 // 0. Graph object represent as list of members
  
 let G = [
-	{"name": 'a', "neighbors": ['d', 'g'] },
-	{"name": 'b', "neighbors": ['a'] },
-	{"name": 'c', "neighbors": ['b'] },
-	{"name": 'd', "neighbors": ['g', 'h'] },
-	{"name": 'e', "neighbors": ['f', 'b', 'h'] },
-	{"name": 'f', "neighbors": ['c', 'e'] },
-	{"name": 'g', "neighbors": ['d'] },
-	{"name": 'h', "neighbors": ['g'] }
+	{"name": 'a', "neighbors": ['d', 'g'], "v_ind": 0 },
+	{"name": 'b', "neighbors": ['a'], "v_ind": 1 },
+	{"name": 'c', "neighbors": ['b'], "v_ind": 2 },
+	{"name": 'd', "neighbors": ['g', 'h'], "v_ind": 3 },
+	{"name": 'e', "neighbors": ['f', 'b', 'h'], "v_ind": 4 },
+	{"name": 'f', "neighbors": ['c', 'e'], "v_ind": 5 },
+	{"name": 'g', "neighbors": ['d'], "v_ind": 6 },
+	{"name": 'h', "neighbors": ['g'], "v_ind": 7 }
 ];
 
 let G_no_circle = [
-	{"name": 'a', "neighbors": ['b', 'c'] },
-	{"name": 'b', "neighbors": ['c', 'd', 'e'] },
-	{"name": 'c', "neighbors": ['e', 'f'] },
-	{"name": 'd', "neighbors": ['e'] },
-	{"name": 'e', "neighbors": ['f'] },
-	{"name": 'f', "neighbors": [] }
+	{"name": 'a', "neighbors": ['b', 'c'], "v_ind": 0 },
+	{"name": 'b', "neighbors": ['c', 'd', 'e'], "v_ind": 1 },
+	{"name": 'c', "neighbors": ['e', 'f'], "v_ind": 2 },
+	{"name": 'd', "neighbors": ['e'], "v_ind": 3 },
+	{"name": 'e', "neighbors": ['f'], "v_ind": 4 },
+	{"name": 'f', "neighbors": [], "v_ind": 5 }
 ];
 
 let time, hasCircle = false;
 let sc_components = []
 let E = [];
+
+$(function() {
+	//GSCC(G);
+
+	viz();
+
+	// controls
+	$("#start").click(function(){
+		reset();
+		rebildGraphViaUserChanges();
+		dfs(G); 
+	});
+
+});
+
 
 //1. Algorithms DFS (Depth First Search)  
 //get 1 parameters graph G and node s
@@ -34,8 +49,11 @@ function dfs(G) {
 		G[i].f = 0;
 		G[i].color = 'W' // white
 		G[i].pi = null;
-	}
 
+		repeaintAll(G[i].v_ind, "#fff", "#000", "#aaa");
+	}
+	insertIntoTable("DFS");
+		
 	time = 0;
 
 	// 1.2 Alrorithms cycle
@@ -44,6 +62,8 @@ function dfs(G) {
 		DFS_Visit(G, v);
 		}
 	});
+
+	console.log(G);
 }
 
 // 1.3 Recursively function DFS_Visit
@@ -51,6 +71,7 @@ function DFS_Visit(G,u) {
 	u.color = 'G'; // gray
 	time++;
 	u.d = time;
+	repeaint(u.v_ind, "#777", "#000", "#777");
 
 	u.neighbors.forEach(function(v) {
 		let tmp = search(G, v);
@@ -64,6 +85,8 @@ function DFS_Visit(G,u) {
 	u.color = 'B';
 	time++;
 	u.f = time;
+	insertIntoTable("DFS");
+	repeaint(u.v_ind, "#333", "#fff", "#333");
 }
 
 //search in array helper function
@@ -173,18 +196,3 @@ function GSCC() {
 	console.log("Strongly connected Components: ",sc_components);
 	
 }
-
-
-$(function() {
-	GSCC(G);
-	dfs(G_no_circle);
-	console.log("Result graph G after DFS");
-	console.log(G_no_circle);
-	console.log(E);
-
-	if (hasCircle) { console.log("Graph G has a circle") }
-	else {
-		console.log("Graph G has not  a circle");
-	 	topologicalSort(G_no_circle);
-	} 
-});

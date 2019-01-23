@@ -31,8 +31,7 @@ $(function() {
 		let startNodeName = prompt("Enter name of start vertice ?"); 
 		startNode = search(G, startNodeName);
 		if (startNode != null) {
-			setTimeout(function(){ bsf(G, startNode); }, 1000);
-			
+			 bsf(G, startNode); 
 		}
 		else {
 			alert("Not found vertice "+startNodeName+" in current graph");
@@ -170,10 +169,9 @@ function repeaint(id, color, fontColor, text, borderColor) {
 function repeaintAll(id, color, fontColor, text, borderColor) {
 			nodes.update({
 				id: id, 
-				//label: text,
 				font: { color:  fontColor },
-			 	color:{ background:color, border:borderColor,highlight:{background:'red',border:'blue'}}
-			 	 });
+			 	color:{ background:color, border:borderColor}
+			 	});
 }
 
 function tableHead() {
@@ -226,7 +224,7 @@ function bsf(G, s) {
 		G[i].color = 'W' // white
 		G[i].pi = null;
 
-		repeaintAll(i, "#fff", "#000", G[i].name+"\nd = INF \nPi = NIL", "#aaa");	
+		repeaintAll(G[i].v_ind, "#fff", "#000", G[i].name+"\nd = INF \nPi = NIL", "#aaa");	
 	}
 	insertIntoTable();
 	
